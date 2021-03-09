@@ -2,6 +2,8 @@
 
 #include "stx/string.h"
 
+using namespace std::string_literals;
+
 SCENARIO("split a string into parts", "[stx::string::split]") {
     GIVEN("An empty string") {
         WHEN("Called with '/' as separator (discard empty)") {
@@ -207,5 +209,46 @@ TEST_CASE("String List Replace", "[stx::string::replace_with]") {
         auto res = stx::replace_with("?,?,?", "?", "test", 123, true);
 
         REQUIRE(res == "test,123,1");
+    }
+}
+
+TEST_CASE("Range to hex string", "[stx::string::to_hex]") {
+    SECTION("Empty Range") {
+        auto vec = std::vector<unsigned>();
+        auto res = stx::to_hex(vec.begin(), vec.end());
+
+        REQUIRE(res == "");
+    }
+
+    SECTION("uint8 vector") {
+        auto vec = std::vector<std::uint8_t> {
+            0x0, 0x1, 0xff, 0xf0
+        };
+        auto resl = stx::to_hex(vec.begin(), vec.end());
+        auto resu = stx::to_hex(vec.begin(), vec.end(), true);
+
+        REQUIRE(resl == "0001fff0");
+        REQUIRE(resu == "0001FFF0");
+    }
+
+    SECTION("uint32 vector") {
+        auto vec = std::vector<std::uint32_t> {
+            0x0, 0x1, 0xff, 0xff00ff00
+        };
+        auto resl = stx::to_hex(vec.begin(), vec.end());
+        auto resu = stx::to_hex(vec.begin(), vec.end(), true);
+
+        REQUIRE(resl == "0000000000000001000000ffff00ff00");
+        REQUIRE(resu == "0000000000000001000000FFFF00FF00");
+    }
+
+    SECTION("string") {
+        auto str = "Hallo Welt!"s;
+
+        auto resl = stx::to_hex(str.begin(), str.end());
+        auto resu = stx::to_hex(str.begin(), str.end(), true);
+
+        REQUIRE(resl == "48616c6c6f2057656c7421");
+        REQUIRE(resu == "48616C6C6F2057656C7421");
     }
 }
