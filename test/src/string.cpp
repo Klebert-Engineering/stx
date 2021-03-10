@@ -113,6 +113,71 @@ SCENARIO("split a string into parts", "[stx::string::split]") {
     }
 }
 
+SCENARIO("join a range of strings together", "[stx::string::join]") {
+    GIVEN("An empty range") {
+        WHEN("Called with an empty separator") {
+            auto range = std::vector<std::string> {};
+            auto r = stx::join(range.begin(), range.end(), "");
+
+            THEN("Expecting an empty string") {
+                REQUIRE(r == "");
+            }
+        }
+        WHEN("Called with a non-empty separator") {
+            auto range = std::vector<std::string> {};
+            auto r = stx::join(range.begin(), range.end(), "/");
+
+            THEN("Expecting an empty string") {
+                REQUIRE(r == "");
+            }
+        }
+    }
+    GIVEN("A single item") {
+        WHEN("Called with an empty separator") {
+            auto range = std::vector<std::string> {"A"};
+            auto r = stx::join(range.begin(), range.end(), "");
+
+            THEN("A string containing the single item") {
+                REQUIRE(r == "A");
+            }
+        }
+        WHEN("Called with a non-empty separator") {
+            auto range = std::vector<std::string> {"A"};
+            auto r = stx::join(range.begin(), range.end(), "/");
+
+            THEN("A string containing the single item") {
+                REQUIRE(r == "A");
+            }
+        }
+    }
+    GIVEN("Multiple items") {
+        WHEN("Called with an empty separator") {
+            auto range = std::vector<std::string> {"A", "B", "C"};
+            auto r = stx::join(range.begin(), range.end(), "");
+
+            THEN("A string containing all items") {
+                REQUIRE(r == "ABC");
+            }
+        }
+        WHEN("Called with a non-empty separator") {
+            auto range = std::vector<std::string> {"A", "B", "C"};
+            auto r = stx::join(range.begin(), range.end(), "/");
+
+            THEN("A string containing all items separated by /") {
+                REQUIRE(r == "A/B/C");
+            }
+        }
+        WHEN("Called with a multi-character separator") {
+            auto range = std::vector<std::string> {"A", "B", "C"};
+            auto r = stx::join(range.begin(), range.end(), "<:-)>");
+
+            THEN("A string containing all items separated by <:-)>") {
+                REQUIRE(r == "A<:-)>B<:-)>C");
+            }
+        }
+    }
+}
+
 TEST_CASE("String List Replace", "[stx::string::replace_with]") {
     SECTION("Empty Template") {
         auto res = stx::replace_with("", "?", 1, 2, 3);
