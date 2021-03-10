@@ -4,6 +4,8 @@
 #include <string_view>
 #include <vector>
 #include <tuple>
+#include <numeric>
+#include <algorithm>
 
 /* For optional Qt -> std conversions */
 #if defined(QT_CORE_LIB)
@@ -63,6 +65,28 @@ _Container split(const std::string& what,
     return container;
 }
 
+template <class _Iter>
+std::string join(_Iter begin, _Iter end, const std::string& with)
+{
+    if (begin == end)
+        return {};
+
+    std::size_t withSize = (std::min<std::size_t>(std::distance(begin, end), 1u) - 1u) * with.size();
+    std::size_t size = std::accumulate(begin, end, 0u, [](auto init, const auto& v) {
+        return init + v.size();
+    });
+
+    std::string result;
+    result.reserve(size + withSize);
+
+    std::for_each(begin, end, [&, i = 0u](const auto& v) mutable {
+        if (i++ > 0u)
+            result += with;
+        result += v;
+    });
+
+    return result;
+}
 
 namespace impl
 {
