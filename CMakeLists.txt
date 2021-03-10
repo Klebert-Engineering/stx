@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.14.0)
+enable_testing()
 
 # Do not build tests, if stx is bundled
 if (NOT DEFINED PROJECT_NAME)

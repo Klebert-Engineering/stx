@@ -6,6 +6,7 @@
 #include <tuple>
 #include <numeric>
 #include <algorithm>
+#include <type_traits>
 
 /* For optional Qt -> std conversions */
 #if defined(QT_CORE_LIB)
@@ -300,6 +301,28 @@ std::string replace_with(std::string source,
     }
 
     return source;
+}
+
+template <class _Iter>
+std::string to_hex(_Iter begin, _Iter end, bool upcase = false)
+{
+    const char* charset[2] = {"0123456789abcdef", "0123456789ABCDEF"};
+
+    static_assert(std::is_integral_v<typename _Iter::value_type>);
+    const auto type_size = sizeof(typename _Iter::value_type);
+
+    std::string str;
+    str.reserve(2u * std::distance(begin, end) * type_size);
+    std::for_each(begin, end, [&](const auto v) {
+        auto i = type_size - 1u;
+        do {
+            const auto& byte = ((const std::uint8_t*)&v)[i];
+
+            str.push_back(charset[upcase ? 1 : 0][byte >> 4]);
+            str.push_back(charset[upcase ? 1 : 0][byte & 0xf]);
+        } while (i--);
+    });
+    return str;
 }
 
 }

@@ -1,6 +1,7 @@
 project(stx-test)
 
 if (NOT TARGET Catch2::Catch2)
+  unset(NOT_SUBPROJECT)
   add_subdirectory(deps/Catch2)
 endif()
 
