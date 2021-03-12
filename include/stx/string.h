@@ -183,7 +183,7 @@ struct to_string<std::string>
 {
     static auto to(std::string v)
     {
-        return std::move(v);
+        return v;
     }
 };
 
@@ -279,8 +279,6 @@ std::string replace_with(std::string source,
                          const std::string& what,
                          _Args&& ...with)
 {
-    using TupleType = std::tuple<std::decay_t<_Args>...>;
-
     auto tuple = std::tie(with...);
 
     auto find_next = [&](auto start) {

@@ -10,6 +10,11 @@ add_executable(stx-test
   src/string.cpp
   src/map.cpp)
 
+target_compile_options(stx-test
+  PRIVATE
+    $<$<CXX_COMPILER_ID:MSVC>:/W4 /WX>
+    $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Werror>)
+
 target_link_libraries(stx-test
   PUBLIC
     stx
