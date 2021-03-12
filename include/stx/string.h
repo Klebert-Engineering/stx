@@ -73,7 +73,7 @@ std::string join(_Iter begin, _Iter end, const std::string& with)
         return {};
 
     std::size_t withSize = (std::min<std::size_t>(std::distance(begin, end), 1u) - 1u) * with.size();
-    std::size_t size = std::accumulate(begin, end, 0u, [](auto init, const auto& v) {
+    std::size_t size = std::accumulate(begin, end, 0ull, [](auto init, const auto& v) {
         return init + v.size();
     });
 
