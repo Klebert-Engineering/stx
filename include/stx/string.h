@@ -306,8 +306,9 @@ std::string to_hex(_Iter begin, _Iter end, bool upcase = false)
 {
     const char* charset[2] = {"0123456789abcdef", "0123456789ABCDEF"};
 
-    static_assert(std::is_integral_v<typename _Iter::value_type>);
-    const auto type_size = sizeof(typename _Iter::value_type);
+    using ValueType = std::remove_reference_t<decltype(*begin)>;
+    static_assert(std::is_integral_v<ValueType>);
+    const auto type_size = sizeof(ValueType);
 
     std::string str;
     str.reserve(2u * std::distance(begin, end) * type_size);
