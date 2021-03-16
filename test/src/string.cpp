@@ -2,6 +2,8 @@
 
 #include "stx/string.h"
 
+#include <cstring>
+
 using namespace std::string_literals;
 
 SCENARIO("split a string into parts", "[stx::string::split]") {
@@ -247,6 +249,16 @@ TEST_CASE("Range to hex string", "[stx::string::to_hex]") {
 
         auto resl = stx::to_hex(str.begin(), str.end());
         auto resu = stx::to_hex(str.begin(), str.end(), true);
+
+        REQUIRE(resl == "48616c6c6f2057656c7421");
+        REQUIRE(resu == "48616C6C6F2057656C7421");
+    }
+
+    SECTION("c-string") {
+        auto str = "Hallo Welt!";
+
+        auto resl = stx::to_hex(str, str + std::strlen(str));
+        auto resu = stx::to_hex(str, str + std::strlen(str), true);
 
         REQUIRE(resl == "48616c6c6f2057656c7421");
         REQUIRE(resu == "48616C6C6F2057656C7421");
