@@ -7,6 +7,7 @@
 #include <numeric>
 #include <algorithm>
 #include <type_traits>
+#include <iterator>
 
 /* For optional Qt -> std conversions */
 #if defined(QT_CORE_LIB)
