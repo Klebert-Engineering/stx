@@ -25,8 +25,8 @@ namespace stx
  *       If used, `what` _must_ outlive the result!
  */
 template <class _Container = std::vector<std::string>>
-_Container split(const std::string& what,
-                 const std::string& at,
+_Container split(std::string_view what,
+                 std::string_view at,
                  bool removeEmpty = true)
 {
     using ResultType = typename _Container::value_type;
@@ -40,7 +40,7 @@ _Container split(const std::string& what,
 
     /* Special case: empty `at` */
     if (at.empty()) {
-        *out++ = what;
+        *out++ = ResultType(what);
         return container;
     }
 
@@ -50,14 +50,14 @@ _Container split(const std::string& what,
     auto next = [&]() {
         if ((end = what.find(at, begin)) != std::string::npos) {
             if (end - begin || !removeEmpty)
-                *out++ = ResultType(what.data() + begin, end - begin);
+                *out++ = ResultType(what).substr(begin, end - begin);
 
             begin = end + at.size();
             return true;
         }
 
         if (what.size() - begin || !removeEmpty)
-            *out++ = ResultType(what.data() + begin);
+            *out++ = ResultType(what).substr(begin);
 
         return false;
     };

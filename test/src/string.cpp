@@ -115,6 +115,24 @@ SCENARIO("split a string into parts", "[stx::string::split]") {
             REQUIRE(r.at(4) == "e");
         }
     }
+    GIVEN("String with multiple elements - return string_view") {
+        std::string_view in = "error/a/b/c/d/e/error";
+
+        /* Check that we do not read over the string_views boundaries! */
+        in.remove_prefix(6);
+        in.remove_suffix(6);
+
+        auto r = stx::split<std::vector<std::string_view>>(in, "/");
+
+        THEN("Expecting five elements (a, b, c, d, e)") {
+            REQUIRE(r.size() == 5);
+            REQUIRE(r.at(0) == "a");
+            REQUIRE(r.at(1) == "b");
+            REQUIRE(r.at(2) == "c");
+            REQUIRE(r.at(3) == "d");
+            REQUIRE(r.at(4) == "e");
+        }
+    }
 }
 
 SCENARIO("join a range of strings together", "[stx::string::join]") {
