@@ -188,6 +188,15 @@ struct to_string<std::string>
     }
 };
 
+template <>
+struct to_string<std::string_view>
+{
+    static auto to(std::string_view v)
+    {
+        return std::string(v);
+    }
+};
+
 #if defined(QT_CORE_LIB)
 template <>
 struct to_string<QString>
