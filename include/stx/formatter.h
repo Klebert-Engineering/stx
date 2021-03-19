@@ -7,6 +7,8 @@
 #include <charconv>
 #include <type_traits>
 
+#include "string.h"
+
 namespace stx
 {
 
@@ -230,5 +232,20 @@ struct formatter<const char*> : formatter<std::string_view>
         return formatter<std::string_view>::format(value, out);
     }
 };
+
+#if defined(QT_CORE_LIB)
+template <class _Type>
+struct formatter<_Type, std::enable_if_t<std::is_same_v<_Type, QString> ||
+                                         std::is_same_v<_Type, QUuid>>> : formatter<std::string_view>
+{
+    using formatter<std::string_view>::formatter;
+
+    template <class _Iter>
+    void format(const _Type& value, _Iter out)
+    {
+        return formatter<std::string_view>::format(stx::to_string(value), out);
+    }
+};
+#endif
 
 }
