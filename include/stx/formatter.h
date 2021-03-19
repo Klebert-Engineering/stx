@@ -42,6 +42,9 @@ struct formatter_base
     template <class _T>
     static std::optional<_T> eat_number(std::string_view& sv)
     {
+        if (sv.empty())
+            return {};
+
         _T v;
         /* Msvc needs this super stupic iter->ptr conversion. */
         auto begin = &(*sv.begin());
