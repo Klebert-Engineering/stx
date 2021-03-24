@@ -282,3 +282,32 @@ TEST_CASE("Range to hex string", "[stx::string::to_hex]") {
         REQUIRE(resu == "48616C6C6F2057656C7421");
     }
 }
+
+TEST_CASE("Get tuple values as string", "[stx::string::get_as_string]") {
+    SECTION("Empty tuple") {
+        auto t = std::tuple<>();
+        auto res = stx::get_as_string(0u, t);
+
+        REQUIRE(res.empty());
+    }
+
+    SECTION("Out of range") {
+        auto t = std::tuple<std::string>("Test");
+        auto res = stx::get_as_string(GENERATE(~0u, 1u), t);
+
+        REQUIRE(res.empty());
+    }
+
+    SECTION("Mixed tuple") {
+        auto t = std::tuple<int, float, std::string, bool>(7, 1.343f, "Test", true);
+        auto r1 = stx::get_as_string(0u, t);
+        auto r2 = stx::get_as_string(1u, t);
+        auto r3 = stx::get_as_string(2u, t);
+        auto r4 = stx::get_as_string(3u, t);
+
+        REQUIRE(r1 == "7");
+        REQUIRE(r2 == "1.343000");
+        REQUIRE(r3 == "Test");
+        REQUIRE(r4 == "1");
+    }
+}

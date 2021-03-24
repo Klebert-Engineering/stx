@@ -238,16 +238,18 @@ std::string to_string(_T&& v)
 namespace impl
 {
 
-template <std::size_t _Index>
+template <std::size_t _Index1>
 struct get_as_string
 {
+    static constexpr std::size_t Index0 = _Index1 - 1u;
+
     template <class... _Types>
     static std::string get(const std::size_t index,
                            const std::tuple<_Types...>& tuple)
     {
-        return index == _Index
-            ? stx::to_string(std::get<_Index>(tuple))
-            : get_as_string<_Index - 1u>::get(index, tuple);
+        return index == Index0
+            ? stx::to_string(std::get<Index0>(tuple))
+            : get_as_string<_Index1 - 1u>::get(index, tuple);
     }
 };
 
@@ -256,11 +258,9 @@ template <>
 struct get_as_string<0u>
 {
     template <class... _Types>
-    static std::string get(const std::size_t index,
-                           const std::tuple<_Types...>& tuple)
+    static std::string get(const std::size_t,
+                           const std::tuple<_Types...>&)
     {
-        if (index == 0u)
-            return stx::to_string(std::get<0u>(tuple));
         return {};
     }
 };
@@ -274,7 +274,7 @@ template <class _Tuple>
 std::string get_as_string(const std::size_t index,
                           const _Tuple& values)
 {
-    return impl::get_as_string<std::tuple_size_v<_Tuple> - 1u>::get(index, values);
+    return impl::get_as_string<std::tuple_size_v<_Tuple>>::get(index, values);
 }
 
 /**
