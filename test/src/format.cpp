@@ -147,8 +147,8 @@ SCENARIO("format a string", "[stx::format::format]") {
         auto fmt = "Ich {} {}l Wein mit {} Sorten {}.";
 
         THEN("Expecting correctly formatted arguments.") {
-            auto r1 = stx::format(fmt, "mag", 1.0, 4, "Käse");
-            REQUIRE(r1 == "Ich mag 1l Wein mit 4 Sorten Käse.");
+            auto r1 = stx::format(fmt, "mag", 1.5, 4.f, "Käse");
+            REQUIRE(r1 == "Ich mag 1.5l Wein mit 4 Sorten Käse.");
         }
     }
 }

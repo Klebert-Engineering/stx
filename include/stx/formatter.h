@@ -159,8 +159,7 @@ struct formatter<_Type, std::enable_if_t<std::is_floating_point_v<_Type>>> : for
     {
         char buffer[30];
 
-        const auto res = std::to_chars(buffer, buffer + sizeof(buffer), value);
-        const auto size = res.ptr - buffer;
+        auto size = std::snprintf(buffer, sizeof(buffer), "%g",  value);
 
         justify_pre(size, out);
         std::copy_n(buffer, size, out);
