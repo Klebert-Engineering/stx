@@ -7,7 +7,7 @@
 using namespace std::string_literals;
 
 SCENARIO("format a string", "[stx::format::format]") {
-    GIVEN("An format string without any placeholder") {
+    GIVEN("A format string without any placeholder") {
         auto fmt = GENERATE("", "test", "test string", ":-)");
         auto r = stx::format(fmt);
 
@@ -16,7 +16,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string without any placeholder, with escaped braces") {
+    GIVEN("A format string without any placeholder, with escaped braces") {
         std::pair<std::string_view, std::string_view> fmts[] = {
             {"{",             ""},
             {"{{",            "{"},
@@ -41,7 +41,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with placeholders but no values") {
+    GIVEN("A format string with placeholders but no values") {
         auto fmt = GENERATE("{}", "{}{}", "{1}{0}", "{:}{9:abc}");
 
         THEN("Expecting the result to be empty") {
@@ -51,7 +51,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with no indices") {
+    GIVEN("A format string with no indices") {
         auto fmt = "{}, {}, {}, {}, {}";
 
         THEN("Expecting the right order of replacements") {
@@ -61,7 +61,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with manual indices") {
+    GIVEN("A format string with manual indices") {
         auto fmt = "{4}, {3}, {2}, {1}, {0}";
 
         THEN("Expecting the right order of replacements") {
@@ -71,7 +71,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with mixed type of indices") {
+    GIVEN("A format string with mixed type of indices") {
         auto fmt = "{4}, {}, {2}, {}, {3}";
 
         THEN("Expecting the right order of replacements") {
@@ -81,7 +81,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with an index out of range") {
+    GIVEN("A format string with an index out of range") {
         auto fmt = "a={99}, b={999}";
 
         THEN("Expecting no replacements") {
@@ -91,7 +91,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with justify left") {
+    GIVEN("A format string with justify left") {
         auto fmt = "{1:10}{:.<10}{:.<10}";
 
         THEN("Expecting a left aligned string with . as fill char") {
@@ -101,7 +101,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with justify right") {
+    GIVEN("A format string with justify right") {
         auto fmt = "{0:10}{:.>10}{:.>10}";
 
         THEN("Expecting a right aligned string with . as fill char") {
@@ -111,7 +111,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with justify center") {
+    GIVEN("A format string with justify center") {
         auto fmt = "{:.^10}{:-^10}{:,^7}{:=^7}";
 
         THEN("Expecting a right aligned string with . as fill char") {
@@ -121,7 +121,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with different integer bases") {
+    GIVEN("A format string with different integer bases") {
         auto fmt = "{0:0b},{0:0o},{0:0d},{0:0x}";
 
         THEN("Expecting a string containing the same number formatted with different bases") {
@@ -131,7 +131,7 @@ SCENARIO("format a string", "[stx::format::format]") {
         }
     }
 
-    GIVEN("An format string with a fillc and no width specified") {
+    GIVEN("A format string with a fillc and no width specified") {
         auto fmt = "Hello{: }.";
 
         THEN("Expecting a string with a space inbetween, if the template replaces with an non-empty string") {
@@ -140,6 +140,15 @@ SCENARIO("format a string", "[stx::format::format]") {
 
             auto r2 = stx::format(fmt, "");
             REQUIRE(r2 == "Hello.");
+        }
+    }
+
+    GIVEN("A format string with mixed types") {
+        auto fmt = "Ich {} {}l Wein mit {} Sorten {}.";
+
+        THEN("Expecting correctly formatted arguments.") {
+            auto r1 = stx::format(fmt, "mag", 1.0, 4, "Käse");
+            REQUIRE(r1 == "Ich mag 1l Wein mit 4 Sorten Käse.");
         }
     }
 }
