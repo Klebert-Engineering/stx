@@ -122,12 +122,18 @@ SCENARIO("format a string", "[stx::format::format]") {
     }
 
     GIVEN("A format string with different integer bases") {
-        auto fmt = "{0:0b},{0:0o},{0:0d},{0:0x}";
+        auto fmt = "{0:0o},{0:0d},{0:0x}";
 
         THEN("Expecting a string containing the same number formatted with different bases") {
             auto r = stx::format(fmt, 123);
 
-            REQUIRE(r == "1111011,173,123,7b");
+            REQUIRE(r == "173,123,7b");
+        }
+
+        THEN("Expecting a string containing the same number formatted with different bases (negative input)") {
+            auto r = stx::format(fmt, -123);
+
+            REQUIRE(r == "-173,-123,-7b");
         }
     }
 
