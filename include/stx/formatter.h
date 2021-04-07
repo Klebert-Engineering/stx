@@ -4,10 +4,11 @@
 #include <string_view>
 #include <optional>
 #include <algorithm>
-#include <charconv>
 #include <type_traits>
+#include <array>
 
 #include "string.h"
+#include "format_charconv_impl.h"
 
 namespace stx
 {
@@ -48,13 +49,11 @@ struct formatter_base
             return {};
 
         _T v;
-        /* Msvc needs this super stupic iter->ptr conversion. */
-        auto begin = &(*sv.begin());
-        auto r = std::from_chars(begin, begin + sv.size(), v);
-        if (r.ptr == begin)
+        auto [iter, ok] = format_impl::parse_int(sv.begin(), sv.end(), v);
+        if (!ok)
             return {};
 
-        sv.remove_prefix(r.ptr - begin);
+        sv.remove_prefix(std::distance(sv.begin(), iter));
         return v;
     }
 
@@ -157,12 +156,12 @@ struct formatter<_Type, std::enable_if_t<std::is_floating_point_v<_Type>>> : for
     template <class _Iter>
     void format(_Type value, _Iter out)
     {
-        char buffer[30];
+        std::array<char, 30> buffer;
 
-        auto size = std::snprintf(buffer, sizeof(buffer), "%g",  value);
+        auto size = std::snprintf(buffer.data(), buffer.size(), "%g",  value);
 
         justify_pre(size, out);
-        std::copy_n(buffer, size, out);
+        std::copy_n(buffer.begin(), size, out);
         justify_post(size, out);
     }
 };
@@ -179,23 +178,42 @@ struct formatter<_Type, std::enable_if_t<std::is_integral_v<_Type>>> : formatter
         if (!justify)
             justify = '>';
 
-        auto base_ident = formatter_base::eat_char(sv, "xdob").value_or('d');
+        auto base_ident = formatter_base::eat_char(sv, "xdo").value_or('d');
         base = base_ident == 'x' ? 16 :
                base_ident == 'd' ? 10 :
-               base_ident == 'o' ? 8 :
-               base_ident == 'b' ? 2 : 10;
+               base_ident == 'o' ? 8 : 10;
     }
 
     template <class _Iter>
     void format(_Type value, _Iter out)
     {
-        char buffer[30];
+        using MaxType = std::conditional_t<std::is_signed_v<_Type>, std::intmax_t, std::uintmax_t>;
+        const MaxType maxValue = static_cast<MaxType>(value);
 
-        auto res = std::to_chars(buffer, buffer + sizeof(buffer), value, base);
-        const auto size = res.ptr - buffer;
+        std::array<char, 30> buffer;
+
+        std::size_t size = 0u;
+        switch (base) {
+        case 8:
+            size = std::snprintf(buffer.data(), buffer.size(), "%s%jo",
+                                 maxValue < 0 ? "-" : "", std::abs(maxValue));
+            break;
+        case 16:
+            size = std::snprintf(buffer.data(), buffer.size(), "%s%jx",
+                                 maxValue < 0 ? "-" : "", std::abs(maxValue));
+            break;
+        default:
+            if constexpr (std::is_signed_v<_Type>)
+                size = std::snprintf(buffer.data(), buffer.size(), "%jd",
+                                     maxValue);
+            else
+                size = std::snprintf(buffer.data(), buffer.size(), "%ju",
+                                     maxValue);
+            break;
+        }
 
         justify_pre(size, out);
-        std::copy_n(buffer, size, out);
+        std::copy_n(buffer.begin(), size, out);
         justify_post(size, out);
     }
 };

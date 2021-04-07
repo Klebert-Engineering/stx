@@ -5,10 +5,10 @@
 #include <tuple>
 #include <cstring>
 #include <algorithm>
-#include <charconv>
 
 #include "formatter.h"
 #include "format_impl.h"
+#include "format_charconv_impl.h"
 
 namespace stx
 {
@@ -29,9 +29,8 @@ _Iter format_to(_Iter out, std::string_view fmt, const _Args& ...args)
             return;
 
         /* Parse optional argument index */
-        auto sv_begin = &(*begin);
-        if (auto r = std::from_chars(sv_begin, sv_begin + std::distance(begin, end), index); r.ptr != sv_begin) {
-            begin += r.ptr - sv_begin; /* MSVC does not accept: begin = r.ptr */
+        if (auto [iter, ok] = format_impl::parse_int(begin, end, index); ok) {
+            begin = iter;
         } else {
             index = next++; /* Auto incr. index */
         }
