@@ -9,6 +9,7 @@ add_executable(stx-test
   src/main.cpp
   src/string.cpp
   src/format.cpp
+  src/unique-tuple.cpp
   src/map.cpp)
 
 target_compile_options(stx-test
