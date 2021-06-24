@@ -3,6 +3,7 @@
 #include "stx/format.h"
 
 #include <cstring>
+#include <limits>
 
 using namespace std::string_literals;
 
@@ -155,6 +156,19 @@ SCENARIO("format a string", "[stx::format::format]") {
         THEN("Expecting correctly formatted arguments.") {
             auto r1 = stx::format(fmt, "mag", 1.5, 4.f, "Käse");
             REQUIRE(r1 == "Ich mag 1.5l Wein mit 4 Sorten Käse.");
+        }
+    }
+
+    GIVEN("A format string with max integers") {
+        auto fmt = "{} {} {} {}";
+
+        THEN("Expecting the result to contain full numbers") {
+            auto r = stx::format(fmt, std::numeric_limits<std::intmax_t>::min(),
+                                      std::numeric_limits<std::intmax_t>::max(),
+                                      std::numeric_limits<std::uintmax_t>::min(),
+                                      std::numeric_limits<std::uintmax_t>::max());
+
+            REQUIRE(r == "-9223372036854775808 9223372036854775807 0 18446744073709551615");
         }
     }
 }
