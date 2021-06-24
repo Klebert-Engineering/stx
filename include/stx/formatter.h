@@ -156,12 +156,13 @@ struct formatter<_Type, std::enable_if_t<std::is_floating_point_v<_Type>>> : for
     template <class _Iter>
     void format(_Type value, _Iter out)
     {
-        std::array<char, 30> buffer;
+        char buffer[30];
+        buffer[0] = '\0';
 
-        auto size = std::snprintf(buffer.data(), buffer.size(), "%g",  value);
+        auto size = std::snprintf(buffer, sizeof(buffer), "%g",  value);
 
         justify_pre(size, out);
-        std::copy_n(buffer.begin(), size, out);
+        std::copy_n(buffer, size, out);
         justify_post(size, out);
     }
 };
@@ -189,31 +190,38 @@ struct formatter<_Type, std::enable_if_t<std::is_integral_v<_Type>>> : formatter
     {
         using MaxType = std::conditional_t<std::is_signed_v<_Type>, std::intmax_t, std::uintmax_t>;
         const MaxType maxValue = static_cast<MaxType>(value);
+        auto uabs = [](auto value) -> std::uintmax_t {
+            if constexpr (std::is_signed_v<_Type>)
+                return (std::uintmax_t)std::abs((std::intmax_t)value);
+            else
+                return (std::uintmax_t)value;
+        };
 
-        std::array<char, 30> buffer;
+        char buffer[30];
+        buffer[0] = '\0';
 
         std::size_t size = 0u;
         switch (base) {
         case 8:
-            size = std::snprintf(buffer.data(), buffer.size(), "%s%jo",
-                                 maxValue < 0 ? "-" : "", std::abs(maxValue));
+            size = std::snprintf(buffer, sizeof(buffer), "%s%jo",
+                                 maxValue < 0 ? "-" : "", uabs(maxValue));
             break;
         case 16:
-            size = std::snprintf(buffer.data(), buffer.size(), "%s%jx",
-                                 maxValue < 0 ? "-" : "", std::abs(maxValue));
+            size = std::snprintf(buffer, sizeof(buffer), "%s%jx",
+                                 maxValue < 0 ? "-" : "", uabs(maxValue));
             break;
         default:
             if constexpr (std::is_signed_v<_Type>)
-                size = std::snprintf(buffer.data(), buffer.size(), "%jd",
+                size = std::snprintf(buffer, sizeof(buffer), "%jd",
                                      maxValue);
             else
-                size = std::snprintf(buffer.data(), buffer.size(), "%ju",
+                size = std::snprintf(buffer, sizeof(buffer), "%ju",
                                      maxValue);
             break;
         }
 
         justify_pre(size, out);
-        std::copy_n(buffer.begin(), size, out);
+        std::copy_n(buffer, size, out);
         justify_post(size, out);
     }
 };
