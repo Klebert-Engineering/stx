@@ -86,9 +86,9 @@ struct formatter_base
     template <class _Iter>
     void justify_pre(size_t width, _Iter out)
     {
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized" /* GCC warns about `min_width` being accessed unitialized, which is not the case. */
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized" /* GCC warns about `min_width` being accessed unitialized, which is not the case. */
 #endif
         if (justify == '>') {
             if (min_width && width < min_width)
@@ -103,7 +103,7 @@ struct formatter_base
             if (!min_width && fillc && width > 0)
                 *out++ = *fillc;
         }
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
     }
@@ -111,9 +111,9 @@ struct formatter_base
     template <class _Iter>
     void justify_post(size_t width, _Iter out)
     {
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
         if (justify == '<') {
             if (min_width && width < min_width)
@@ -126,7 +126,7 @@ struct formatter_base
             if (!min_width && fillc && width > 0)
                 *out++ = *fillc;
         }
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
     }
