@@ -87,11 +87,11 @@ struct formatter_base
     void justify_pre(size_t width, _Iter out)
     {
         if (justify == '>') {
-            if (width < min_width)
-                std::fill_n(out, min_width.value_or(width) - width, fillc.value_or(' '));
+            if (min_width && width < min_width)
+                std::fill_n(out, *min_width - width, fillc.value_or(' '));
         } else if (justify == '^') {
-            if (width < min_width)
-                std::fill_n(out, (min_width.value_or(width) - width) / 2, fillc.value_or(' '));
+            if (min_width && width < min_width)
+                std::fill_n(out, (*min_width - width) / 2, fillc.value_or(' '));
         } else if (justify == '<') {
             /* Special case: Prepend 1 fillc if value is non-empty.
              * Why? This supports a handy trick to prepend a space to non-empty values.
@@ -105,12 +105,11 @@ struct formatter_base
     void justify_post(size_t width, _Iter out)
     {
         if (justify == '<') {
-            if (width < min_width)
-                std::fill_n(out, min_width.value_or(width) - width, fillc.value_or(' '));
+            if (min_width && width < min_width)
+                std::fill_n(out, *min_width - width, fillc.value_or(' '));
         } else if (justify == '^') {
-            if (width < min_width)
-                std::fill_n(out, (min_width.value_or(width) - width) / 2 + ((min_width.value_or(width) - width) % 2),
-                            fillc.value_or(' '));
+            if (min_width && width < min_width)
+                std::fill_n(out, (*min_width - width) / 2 + ((*min_width - width) % 2), fillc.value_or(' '));
         } else if (justify == '>') {
             /* See `justify_pre` comment. */
             if (!min_width && fillc && width > 0)
