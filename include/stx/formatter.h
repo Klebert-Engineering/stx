@@ -90,7 +90,7 @@ struct formatter_base
             if (width < min_width && min_width)
                 std::fill_n(out, *min_width - width, fillc.value_or(' '));
         } else if (justify == '^') {
-            if (width < min_width)
+            if (width < min_width && min_width)
                 std::fill_n(out, (*min_width - width) / 2, fillc.value_or(' '));
         } else if (justify == '<') {
             /* Special case: Prepend 1 fillc if value is non-empty.
