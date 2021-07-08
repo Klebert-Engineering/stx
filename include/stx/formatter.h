@@ -86,6 +86,10 @@ struct formatter_base
     template <class _Iter>
     void justify_pre(size_t width, _Iter out)
     {
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized" /* GCC warns about `min_width` being accessed unitialized, which is not the case. */
+#endif
         if (justify == '>') {
             if (min_width && width < min_width)
                 std::fill_n(out, *min_width - width, fillc.value_or(' '));
@@ -99,11 +103,18 @@ struct formatter_base
             if (!min_width && fillc && width > 0)
                 *out++ = *fillc;
         }
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     }
 
     template <class _Iter>
     void justify_post(size_t width, _Iter out)
     {
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#endif
         if (justify == '<') {
             if (min_width && width < min_width)
                 std::fill_n(out, *min_width - width, fillc.value_or(' '));
@@ -115,6 +126,9 @@ struct formatter_base
             if (!min_width && fillc && width > 0)
                 *out++ = *fillc;
         }
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
     }
 };
 
