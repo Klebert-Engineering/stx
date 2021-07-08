@@ -105,10 +105,10 @@ struct formatter_base
     void justify_post(size_t width, _Iter out)
     {
         if (justify == '<') {
-            if (width < min_width)
+            if (width < min_width && min_width)
                 std::fill_n(out, *min_width - width, fillc.value_or(' '));
         } else if (justify == '^') {
-            if (width < min_width)
+            if (width < min_width && min_width)
                 std::fill_n(out, (*min_width - width) / 2 + ((*min_width - width) % 2), fillc.value_or(' '));
         } else if (justify == '>') {
             /* See `justify_pre` comment. */
