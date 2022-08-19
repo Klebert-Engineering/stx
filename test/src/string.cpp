@@ -124,13 +124,18 @@ SCENARIO("split a string into parts", "[stx::string::split]") {
 
         auto r = stx::split<std::vector<std::string_view>>(in, "/");
 
+        std::vector<std::string> o;
+        std::transform(r.begin(), r.end(), std::back_inserter(o), [](const auto& v) {
+            return std::string(v);
+        });
+
         THEN("Expecting five elements (a, b, c, d, e)") {
-            REQUIRE(r.size() == 5);
-            REQUIRE(r.at(0) == "a");
-            REQUIRE(r.at(1) == "b");
-            REQUIRE(r.at(2) == "c");
-            REQUIRE(r.at(3) == "d");
-            REQUIRE(r.at(4) == "e");
+            REQUIRE(o.size() == 5);
+            REQUIRE(o.at(0) == "a");
+            REQUIRE(o.at(1) == "b");
+            REQUIRE(o.at(2) == "c");
+            REQUIRE(o.at(3) == "d");
+            REQUIRE(o.at(4) == "e");
         }
     }
 }

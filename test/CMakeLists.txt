@@ -1,5 +1,6 @@
 project(stx-test)
 
+set(CMAKE_CXX_STANDARD 17) # Required for catch2
 if (NOT TARGET Catch2)
   FetchContent_Declare(Catch2
     GIT_REPOSITORY "https://github.com/catchorg/Catch2.git"
@@ -14,6 +15,10 @@ add_executable(stx-test
   src/unique-tuple.cpp
   src/option-set.cpp
   src/map.cpp)
+
+target_compile_features(stx-test
+  PUBLIC
+    cxx_std_17)
 
 target_compile_options(stx-test
   PRIVATE
